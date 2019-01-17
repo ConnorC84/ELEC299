@@ -1,16 +1,24 @@
+//IR Thresholds
+#define IR1Threshold 975 
+#define IR2Threshold 975
+#define IR3Threshold 975 // Note IR3 is the middle one 
+
+//Encoder counter full pass definition
+#define pass 16
+//IR Sensors
 int IR1 = A0;
 int IR2 = A1;
 int IR3 = A2;
 
+//Encoders
+int encoder1 = 10; 
+int encoder2 = 9; 
+
+//Motor stuff
 int rightDirection = 7;
 int leftDirection = 4;
 int leftSpeed = 5;
 int rightSpeed = 6;
-
-#define IR1Threshold 975 
-#define IR2Threshold 975
-#define IR3Threshold 975 
-
 
 void setup() {
   // IR Sensors 
@@ -23,52 +31,80 @@ void setup() {
   pinMode(leftDirection, OUTPUT);
   pinMode(rightSpeed, OUTPUT);
   pinMode(leftSpeed, OUTPUT);
+
+  // Encoders are inputs - Reads 0 when it passes a point (16 times per full rotation)
+  pinMode(encoder1, INPUT);
+  pinMode(encoder2, INPUT);
   
+  // Start communication with serial monitor at baud rate 9600
   Serial.begin(9600);
-  
 }
 
 void loop() {
-
-inputs();
-delay(500);
-while((analogRead(IR2) < IR2Threshold) && (analogRead(IR1) < IR1Threshold) && (analogRead(IR3) > IR3Threshold)){
-  driveLine();
+  countEncoder(true, 3);
+  countEncoder(false, 2);
+  rotateLeft();
 }
 
-rotateLeftLine();
 
-}
+//Function that counts the encoder passes 
+//Distance parameter is how many times it runs 1 full wheel rotation
+void countEncoder(bool direction, int distance){
 
-void inputs(){
-  Serial.print(analogRead(IR1));
-  Serial.print("\n");
-  /*Serial.print(analogRead(IR2));
-  Serial.print("\n");
-  Serial.print(analogRead(IR3));
-  Serial.print("\n");
-  */
-}
+  int counter = 0;
 
-void driveLine(){
-  
+  while(counter < pass*distance){
+
+    if (direction == true){
+      driveForward();
+    }
+
+    else{
+      driveBackwards();
+    }
+
+    if(analogRead(encoder1) == 0){
+     counter++;
+    }
+
+  }
+}// countEcoder()
+
+void driveForward(){
+
     digitalWrite(leftDirection, HIGH);
     digitalWrite(rightDirection, HIGH);
-
     analogWrite(leftSpeed, 200);
     analogWrite(rightSpeed, 200); 
-  }
 
+}// driveForward()
 
-void rotateLeftLine(){
-  while(analogRead(IR1) < IR1Threshold){
+void driveBackwards(){
+  
+  digitalWrite(leftDirection, LOW);
+  digitalWrite(rightDirection, LOW);
+  analogWrite(leftSpeed, 200);
+  analogWrite(rightSpeed, 200); 
+  
+}// driveBackwards
+
+//Function rotates left based on a certain amount of degrees 
+void rotateLeft(int degrees){
+  int turn = degrees/360;
+
+  int rotate = turn/16;
+  int rotated = 0;
+
+  while(rotated < rotate){
+
+    if(analogRead(encoder1) == 0){
+     rotated++;
+    }
+
     digitalWrite(leftDirection, LOW);
     digitalWrite(rightDirection, HIGH);
-
     analogWrite(leftSpeed, 200);
-    analogWrite(rightSpeed, 200);    
-  }
+    analogWrite(rightSpeed, 200); 
 
-    digitalWrite(leftSpeed, LOW);
-    digitalWrite(rightSpeed, LOW);
-}
+  }
+}// rotateLeft()
