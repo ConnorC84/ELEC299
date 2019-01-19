@@ -1,0 +1,42 @@
+const unsigned int PushPin = 12;
+const unsigned int LEDPin = 13;
+const unsigned int PotPin = A0;
+
+boolean state = false;
+boolean last = false;
+boolean pressed;
+unsigned long lastTime;
+unsigned long current;
+unsigned int time_delay;
+
+void setup() {
+  pinMode(PushPin, INPUT);
+  pinMode(PotPin, INPUT);
+  pinMode(LEDPin, OUTPUT);
+}
+
+void loop() {
+  //BUTTON RELEASE DETECTION 
+  pressed = digitalRead(PushPin);
+  if(pressed == true && last == false)
+    last = true;
+  else if(pressed == false && last == true){
+    last = false;
+    state = !state;                       //FLIP THE STATE
+  }
+
+  //DO POT STUFF
+  time_delay = analogRead(A0);
+  time_delay = map(time_delay, 0, 1023, 250, 1000);
+  
+  //DO LED STUFF
+  if(state == true){
+    current = millis();                           //MILLIS COUNTS UP FROM ZERO TO CURRENT NUMBER OF MILLISECONDS
+    if(current - lastTime > time_delay){          //IF POT VALUE MILLISECONDS HAVE PASSED
+      digitalWrite(LEDPin, !digitalRead(LEDPin)); //FLIP THE LED
+      lastTime = current;                         //UPDATE LAST TIME TO CURRENT TIME
+    }
+  }
+  else
+    digitalWrite(LEDPin, LOW);
+}
