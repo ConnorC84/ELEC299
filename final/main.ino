@@ -1,5 +1,12 @@
 /* Main Code for the ELEC299 Robot Competition
 
+/* THINGS TO DO!
+1. Fix all variable names and make sure everything is compiling right
+2. Build the rest of the routes to follow 
+3. Function to set whichever route to follow based on incoming IR beacon
+4. Add recursion to the pickupball function such that if it doesnt get it first try, it will back up and try again
+5. TEST EVERYTHING AS CHANGES ARE MADE PLEASE!!
+
 ---------------Wiring Schematic----------------
 
 DIGITAL PINS: 
