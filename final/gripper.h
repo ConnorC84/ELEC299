@@ -5,7 +5,9 @@ void pickUpDice() {
   tempCoords[0] = botCoords[0];
   tempCoords[1] = botCoords[1];
   tempCoords[2] = botCoords[2];
-
+//
+  
+  
   //todo react to buttons
   digitalWrite(RMotorDir, HIGH);
   digitalWrite(LMotorDir, HIGH);
