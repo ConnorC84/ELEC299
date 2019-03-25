@@ -5,35 +5,33 @@ void pickUpDice() {
   tempCoords[0] = botCoords[0];
   tempCoords[1] = botCoords[1];
   tempCoords[2] = botCoords[2];
-//
-  
-  
+
   //todo react to buttons
-  digitalWrite(RMotorDir, HIGH);
-  digitalWrite(LMotorDir, HIGH);
-  analogWrite(LMotorSpeed, forwardSpeed);
-  analogWrite(RMotorSpeed, forwardSpeed);
-  while (digitalRead(bumpers) == 1) {
+  digitalWrite(rightDirection, HIGH);
+  digitalWrite(leftDirection, HIGH);
+  analogWrite(leftSpeed, forwardSpeed);
+  analogWrite(rightSpeed, forwardSpeed);
+  while (digitalRead(Bumpers) == 1) {
 
   }
-  analogWrite(LMotorSpeed, 0);
-  analogWrite(RMotorSpeed, 0);
+  analogWrite(leftSpeed, 0);
+  analogWrite(rightSpeed, 0);
   delay(300);
 
-  digitalWrite(RMotorDir, LOW);
-  digitalWrite(LMotorDir, LOW);
-  analogWrite(LMotorSpeed, forwardSpeed);
-  analogWrite(RMotorSpeed, forwardSpeed);
+  digitalWrite(leftDirection, LOW);
+  digitalWrite(rightDirection, LOW);
+  analogWrite(leftSpeed, forwardSpeed);
+  analogWrite(rightSpeed, forwardSpeed);
   delay(300);
 
-  analogWrite(LMotorSpeed, 0);
-  analogWrite(RMotorSpeed, 0);
+  analogWrite(leftSpeed, 0);
+  analogWrite(rightSpeed, 0);
   servoArm.write(50); //move arm down
 
-  digitalWrite(RMotorDir, HIGH);
-  digitalWrite(LMotorDir, HIGH);
-  analogWrite(LMotorSpeed, forwardSpeed);
-  analogWrite(RMotorSpeed, forwardSpeed);
+  digitalWrite(rightDirection, HIGH);
+  digitalWrite(leftDirection, HIGH);
+  analogWrite(leftSpeed, forwardSpeed);
+  analogWrite(rightSpeed, forwardSpeed);
   delay(300);
 
   Grip();
