@@ -7,6 +7,7 @@ class matrixclass
     matrixclass();
     void SETUP();
     void getPos();
+	//void movePos();
     int rotation();
 };
 
