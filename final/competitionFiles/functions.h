@@ -32,6 +32,9 @@
 int L = 0;
 int M = 0;
 int R = 0;
+int IRValues[3] = {0, 0, 0};
+const int IRThreshold = 900; //TEST THIS 
+const int driftTime = 100;
 //---------------------------------------------
 
 //---------Encoder Starting Values-------------
@@ -52,7 +55,6 @@ int forwardSpeedRight = 105; //retune on competition day
 int rotateSpeedLeft = 105;
 int rotateSpeedRight = 105;
 
-int driftTime = 700;
 int rotateStartDelay = 600;
 
 int leftBumpThres = 200; //if under 200 its left bumper
@@ -61,20 +63,67 @@ int bothBumpers = 0; //if both bumpers are pressed
 //-------------------------------------------------
 
 //Driving Functions
-void forward(int flag){
+
+void checkIRSensors(){
+  for(int i = 0; i < 5; i++){
+    L = analogRead(leftIR);
+    M = analogRead(centreIR);
+    R = analogRead(rightIR);
+    
+    if(L > IRThreshold){
+      IRValues[0] = 1;
+    }
+    
+    if(M > IRThreshold){
+      IRValues[1] = 1;
+    }
+    
+    if(R > IRThreshold){
+      IRValues[2] = 1;
+    }
+    delay(15);
+  }
+}
+
+int intersection(){
+  if(IRValues[0] == 1 && IRValues[1] == 1 && IRValues[2] == 1){
+    return 0;
+  }
+  
+  return 1;
+}
+void forward(){
 	int lineCounter = 0;
 	digitalWrite(leftDirection, HIGH);
 	digitalWrite(rightDirection, HIGH);
-	
 	analogWrite(leftSpeed, forwardSpeedLeft);
 	analogWrite(rightSpeed, forwardSpeedRight);
 	
-	delay(300);
-//	blink();
+	int intersectionBool = 1;
 	
-	while(true){
-		digitalWrite(leftDirection, HIGH);
-		digitalWrite(rightDirection, HIGH);
-	//	checkLine();
+	while(intersectionBool){
+		for(int i = 0; i < 5; i++){
+			L = analogRead(leftIR);
+			M = analogRead(centreIR);
+			R = analogRead(rightIR);
+		
+			if(L > IRThreshold){
+				IRValues[0] = 1;
+			}
+		
+			if(M > IRThreshold){
+				IRValues[1] = 1;
+			}
+		
+			if(R > IRThreshold){
+				IRValues[2] = 1;
+			}
+		}
+		
+		intersectionBool = intersection();
+		
 	}
-}
+	analogWrite(leftSpeed, 0);
+	analogWrite(rightSpeed, 0);
+
+	}

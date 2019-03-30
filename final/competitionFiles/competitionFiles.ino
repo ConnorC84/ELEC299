@@ -111,5 +111,5 @@ void WaitButton(){
 //}
 
 void loop(){
-	forward(1);
+	forward();
 }

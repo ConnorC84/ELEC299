@@ -1,4 +1,4 @@
-#define test A4
+#define test A5
 int testing = 1;
 
 void setup() {
@@ -11,8 +11,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
- 
-  Serial.print(analogRead(test));
+
+  int onLine;
+  Serial.println(analogRead(test));
+  int buffer = analogRead(test);
+  if (buffer < 900){
+    onLine = 0;
+  }
+  else{
+    onLine = 1;
+  }
+  //Serial.println(onLine);
   delay(100);
   Serial.println();
 }

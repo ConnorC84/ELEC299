@@ -299,6 +299,8 @@ void MoveForwardAlongLine(int bumperFlag) {
     }
   }
 }
+
+
 void findLostLine() {
   if (sweepForLostLine() == 0) {
     digitalWrite(RMotorDir, LOW);
