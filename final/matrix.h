@@ -3,16 +3,18 @@
 
 class matrixclass
 {
-  public:
+  public: //User accessible public interface
     matrixclass();
     void SETUP();
     void getPos();
 	//void movePos();
 	//findRoute();
     int rotation();
+	
+	
 };
 
-extern matrixclass matrix;
+//extern matrixclass matrix;
   
   #endif
   
