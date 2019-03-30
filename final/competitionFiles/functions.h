@@ -8,7 +8,9 @@
 - Connor look into Line following code 
 	- write a function so if we put it diagonally it will straighten and follow line 
 	
+ILC 317 at 8:30 Sunday
 ILC 317 at 3:30 on Monday 
+ILC 317 8:30 on Monday 
 ILC 317 at 5:30 to 11:30
 
 fail safe functions to implement 
