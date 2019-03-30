@@ -49,3 +49,24 @@ void robot::SETUP(){
 void robot::print(){
 	Serial.print("Hello there");
 }
+
+bool robot::grab(int angleToRotate){
+	angle = 0;
+	servoPan.write(angleToRotate); //rotate the arm
+	servoGrip.write(angle); //open up the grip to start
+	delay(500);
+	servoTilt.write(70); //move arm down into position
+	delay(200);
+	int grip = 0;
+	while(grip < gripThres){
+		grip = analogRead(gripSensor);
+		angle++; //increase angle for servo grip (make it close)
+		servoGrip.write(angle);
+		delay(40);
+		if (angle > maxAngle){ //test case if the object is not picked up
+			servoTilt.write(180); //move back up
+			delay(200);
+			return false;
+		}
+	} // at this point the ball is gripped and the arm is raised
+}

@@ -16,7 +16,7 @@ class robot {
 		//Gripper functions
 		void pickUp();
 		void drop();
-		bool grab(int angleToCheck);
+		bool grab(int angleToRotate);
 		
 		void print();
 };
