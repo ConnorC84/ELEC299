@@ -1,8 +1,6 @@
 //Testing file for different functions
 
 //Pin Definitions
-
-
 void setup(){
 
 }
