@@ -47,7 +47,7 @@ void robot::SETUP(){
 }
 
 void robot::print(){
-	Serial.print("Hello there");
+	Serial.print("Hello there   ");
 }
 
 bool robot::grab(int angleToRotate){
