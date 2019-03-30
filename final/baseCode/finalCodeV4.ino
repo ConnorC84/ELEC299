@@ -197,7 +197,11 @@ void loop() {
 completeRoute(int startPoint){
 	switch(startPoint)
 		case 1:
-			
+			completePath(testpath1_1, pathLength[1 - 1][0]);
+			completePath(testpath1_2, pathLength[1 - 1][1]);
+			completePath(testpath1_3, pathLength[1 - 1][2]);
+			completePath(testpath1_4, pathLength[1 - 1][3]);
+			completePath(testpath1_5, pathLength[1 - 1][4]);
 			
 		case 2:
 		

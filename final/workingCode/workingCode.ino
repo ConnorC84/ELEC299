@@ -210,6 +210,7 @@ void moveToCordinate(int cord[]) {
   if (cordDifrence[1] == -1) {
     targetOrientation = 2;
   }
+  
   Serial.println("target Oreintation is: " + String(targetOrientation));
   int neededRotation;
   neededRotation = targetOrientation - botCoords[2];
