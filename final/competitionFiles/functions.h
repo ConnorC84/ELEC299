@@ -1,5 +1,23 @@
 //functions header file for robot code 
 
+
+/* Shit to do
+- Brent - get bluetooth serial working for testing, interrupt for bumpers 
+- Adam - intersection thing 
+- Juliana Matrix thing, keep working on failsafe for IR 
+- Connor look into Line following code 
+	- write a function so if we put it diagonally it will straighten and follow line 
+	
+ILC 317 at 3:30 on Monday 
+ILC 317 at 5:30 to 11:30
+
+fail safe functions to implement 
+- if IR Beacon doesn't work 
+- collision detection (front facing IR). Maybe with interrupts idk 
+-
+- 
+*/
+
 #include "Arduino.h"
 #include <Servo.h>
 #include "QSerial.h"
@@ -24,7 +42,7 @@
 #define leftIR      A3
 #define centreIR    A4
 #define rightIR     A5
-#define gripSensor    A1
+#define gripSensor  A1
 #define bumper      A2
 #define frontIR     A0
 
@@ -62,6 +80,20 @@ int rightBumpThres = 400; //if greater than 400 its right
 int bothBumpers = 0; //if both bumpers are pressed 
 //-------------------------------------------------
 
+//All Functions
+//Driving
+void checkIRSensor(); //This works
+void intersection(); //I think this works *test it*
+void forward(); // need to update intersection 
+void backward(); //maybe
+void move(); //combine forward and backward into this 
+void rotate(int direction);
+void stop(); //sets direction to forward and speed to 0
+//Servo stuff is good 
+void pickUp();
+void drop();
+bool grab(int angleToRotate);
+
 //Driving Functions
 
 void checkIRSensors(){
@@ -84,7 +116,6 @@ void checkIRSensors(){
     delay(15);
   }
 }
-
 int intersection(){
   if(IRValues[0] == 1 && IRValues[1] == 1 && IRValues[2] == 1){
     return 0;
