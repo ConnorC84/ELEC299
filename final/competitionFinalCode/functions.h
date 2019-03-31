@@ -158,9 +158,10 @@ void forward(){
 	analogWrite(leftSpeed, forwardSpeedLeft);
 	analogWrite(rightSpeed, forwardSpeedRight);
 	
-	int intersectionBool = 1;
+	int flag = 1;
 	
-	while(intersectionBool){
+	while((analogRead(frontIR)) > collisionThreshold){
+		/* Code to make sure it follows line sensors
 		for(int i = 0; i < 5; i++){
 			L = analogRead(leftIR);
 			M = analogRead(centreIR);
@@ -178,12 +179,14 @@ void forward(){
 				IRValues[2] = 1;
 			}
 		}
-		
-		intersectionBool = intersection();
+		*/
 		
 	}
+	//if collision detected stop
 	analogWrite(leftSpeed, 0);
 	analogWrite(rightSpeed, 0);
+	
+	//some code to check if were at the point we want to be at or if it was just detecting a collision?
 
 }
 
