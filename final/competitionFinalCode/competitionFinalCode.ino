@@ -25,6 +25,21 @@
 #define bumper      A2
 #define frontIR     A0
 
+void Init();
+int getStartingPosition();
+void waitButton();
+
+
+void blink(){
+  //blink LED 3 times, will be useful when watching how code functions
+  for(int i = 0; i < 3; i++){
+    digitalWrite(LED, HIGH);
+    delay(100);
+    digitalWrite(LED, LOW);
+    delay(100);
+  }
+}
+
 void setup(){
     Init();
     getStartingPosition();
@@ -42,10 +57,12 @@ void Init(){
     pinMode(rightDirection, OUTPUT);
 	pinMode(receivePin, INPUT);
 	//Servo Motor Controls
-//	servoPan.attach(servoPanPin);
-//	servoTilt.attach(servoTiltPin);
-//	servoGrip.attach(servoGripPin);
-
+	servoPan.attach(servoPanPin);
+	servoTilt.attach(servoTiltPin);
+	servoGrip.attach(servoGripPin);
+  servoPan.write(0);
+  servoTilt.write(0);
+  servoGrip.write(0);
     pinMode(LED, OUTPUT);
 
 	//Analog Pins
@@ -54,24 +71,11 @@ void Init(){
     pinMode(rightIR, INPUT);
 	pinMode(gripSensor, INPUT);
 	pinMode(bumper, INPUT);
-	
-//	IR.attach(receivePin, transmitPin); //transmit is random 
-
-  Serial.begin(9600);
+	IRReceiver.attach(receivePin, transmitPin); //transmit is random 
 	blink(); //will blink when setup is complete
 }
 
-void blink(){
-	//blink LED 3 times, will be useful when watching how code functions
-	for(int i = 0; i < 3; i++){
-		digitalWrite(LED, HIGH);
-		delay(100);
-		digitalWrite(LED, LOW);
-		delay(100);
-	}
-}
-
-void WaitButton(){
+void waitButton(){ //for testing, remove wrapper for competition
     while(true){
 		if(analogRead(bumper) < 550){
     Serial.print("Pushbutton pressed");
@@ -84,13 +88,13 @@ void WaitButton(){
     //Serial.println("Program initiated!");
 }
 
-int getStartingPos(){
+int getStartingPosition(){
 	//Function that recieves the signal from the IR Beacon. 
 	//Once it has received the same char 10 times it will allow the program to initialize
 	
 	int counter = 0;
 	int prevTemp = 0;
-	int temp = IR.receive(200); //receive the IR ASCII 
+	int temp = IRReceiver.receive(200); //receive the IR ASCII 
 	char start; //placeholder for starting position
 	
 	do 
@@ -107,10 +111,12 @@ int getStartingPos(){
 		}
 		prevTemp = temp;
 	} while (counter <= 10);
-
+  
+	delay(500);
 	return int (start);
 }
 
 void loop(){
+	//keep loop empty so that we can test things
 	forward();
 }

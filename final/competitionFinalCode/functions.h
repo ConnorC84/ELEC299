@@ -48,8 +48,8 @@ fail safe functions to implement
 #define centreIR    A4
 #define rightIR     A5
 
-QSerial IRReciever;
-Servo Rotate, Tilt, Grab;
+QSerial IRReceiver;
+Servo servoGrip, servoTilt, servoPan;
 
 //----------IR Line Sensing -----------------
 int L = 0;
@@ -93,17 +93,18 @@ typedef struct {
 } position;
 
 
-position realPosition = {0, 0, 0};
+position currentPosition = {0, 0, 0};
 position balls[15] = {
 	{ 4, 0, 3},{ 3, 0, 3},{ 2, 0, 3},{ 1, 0, 3},{ 0, 0, 3},
 	{ 0, 0, 0},{ 0, 1, 0},{ 0, 2, 0},{ 0, 3, 0},{ 0, 4, 0},
 	{ 4, 4, 1},{ 3, 4, 1},{ 2, 4, 1},{ 1, 4, 1},{ 0, 4, 1}
 };
 
+position route = {};
 //All Functions
 
 void lineSensor(); //This works
-void intersection(); //I think this works *test it*
+int intersection(); //I think this works *test it*
 void forward(); // need to update intersection 
 void backward(); //maybe
 void move(int direction, long speed); //combine forward and backward into this
@@ -115,7 +116,9 @@ void pickUp();
 void drop();
 bool grab(int angleToRotate);
 //Matrix
-
+void movePosition(int final[]);
+void completePass(int route[][2], int routeLength);
+void completeRoute(int startPoint);
 
 
 //Driving Functions
@@ -191,44 +194,45 @@ void rotate(int angles){
 void stop(){
 }
 
+
 //SERVO Functions
-void void pickUp(){
-	int temp[3];
-	for(int i = 0; i < 3; i++){
-		temp[i] = current[i];
-	}
+void pickUp(){
+//	position temp[3] = currentPosition;
+	
 	//moveForward until bumpers hit
-	forward(0);
-	delay();
+	forward();
+	delay(100);
 	//slightly reverse
 	backward();
-	delay(backwardsDelay);
-	resetMotors(); //reset the motors to be forward now
+	delay(100);
+	//resetMotors(); //reset the motors to be forward now
 	
 	analogWrite(leftSpeed, forwardSpeedLeft);
 	analogWrite(rightSpeed, forwardSpeedRight);
 	
-	delay();
+	delay(100);
 	stop();
 	
 	//test different rotations to grip the ball
-	if(grip(90)){
-		if(grip(105)){
-			if(grip(75))
+	if(grab(90)){
+		if(grab(105)){
+			if(grab(75)){
+      //nothing
+			}
 		}
 	} //by here it will have had to pick up a ball!
-	
+
 	servoPan.write(90);
 	
 	backward();
 	rotate(180); 
-	forward(0);
-	current[2] = (temp[2] + 2) % 4; //reset oreintation in global position array
+	forward();
+	//currentPosition[2] = (temp[2] + 2) % 4; //reset oreintation in global position array
 }
 
 void drop(){
-	int temp = current[2];
-	forward(1);
+	//position temp = currentPosition[2];
+	forward();
 	delay(200);
 	servoTilt.write(180);
 	delay(500);
@@ -241,25 +245,25 @@ void drop(){
 	delay(300);
 	rotate(180);
 	delay(200);
-	current[2] = (temp + 2) % 4;
+//	currentPosition[2] = (temp + 2) % 4;
 	servoTilt.write(180);
 	forward();
 }
 
 bool grab(int angleToRotate){
-	angle = 0;
+	angleToRotate = 0;
 	servoPan.write(angleToRotate); //rotate the arm
-	servoGrip.write(angle); //open up the grip to start
+	servoGrip.write(angleToRotate); //open up the grip to start
 	delay(500);
 	servoTilt.write(70); //move arm down into position
 	delay(200);
 	int grip = 0;
 	while(grip < gripThres){
 		grip = analogRead(gripSensor);
-		angle++; //increase angle for servo grip (make it close)
-		servoGrip.write(angle);
+		angleToRotate++; //increase angle for servo grip (make it close)
+		servoGrip.write(angleToRotate);
 		delay(40);
-		if (angle > maxAngle){ //test case if the object is not picked up
+		if (angleToRotate > maxAngle){ //test case if the object is not picked up
 			servoTilt.write(180); //move back up
 			delay(200);
 			return false;
@@ -269,63 +273,63 @@ bool grab(int angleToRotate){
 
 //MATRIX Functions
 void completeRoute(int startPoint){
-	switch(startPoint)
+	switch(startPoint){
 		case 1:
-			completePath(testpath1_1, pathLength[1 - 1][0]);
-			completePath(testpath1_2, pathLength[1 - 1][1]);
-			completePath(testpath1_3, pathLength[1 - 1][2]);
-			completePath(testpath1_4, pathLength[1 - 1][3]);
-			completePath(testpath1_5, pathLength[1 - 1][4]);
-			
+//			completePath(testpath1_1, pathLength[1 - 1][0]);
+//			completePath(testpath1_2, pathLength[1 - 1][1]);
+//			completePath(testpath1_3, pathLength[1 - 1][2]);
+//			completePath(testpath1_4, pathLength[1 - 1][3]);
+//			completePath(testpath1_5, pathLength[1 - 1][4]);
+			break;
 		case 2:
-		
+			//fill in
+			break;
 		
 		case 3:
-		
-		
-		
+			//fil in
+			break;
+	}
 }
-
-void completePass(int route[][2], int length){
-	//This function takes in an array limited to 2 columns, and the length of the path that it will follow
-//This is the function that will be called in the loop 
-	for(int distance; distance < length; distance++){
-		movePosition(route[i]);
-	} //When this loop is done, the robot should be in the correct position to pick up the object
-	
-	pickUp();
-	
-	for(int distance = length; distance > 0; distance--){
-		movePosition(route[i]);
-	} //When this loop is done, the robot will be back at its starting position
-	
-	//if statements COME BACK TO THIS
-	
-	drop();
-}
-	
-void movePosition(int final[]){
-	int difference[2] = {0, 0}; //initialize variable to hold distance between points at 0
-	
-	for(int i = 0; i < 2; i++){
-		difference[i] = final[i] - current[i];
-	} //Now the diference array has the distance to travel in x and y component
-	
-	if(difference[0] == 0 && difference[1] == 0)
-		//Serial.println("Already in position");
-		return;
-		
-	int nextOreintation = getOreintation(difference); //Find which way the bot needs to turn 
-	//Serial.println("You would like to face: " + goalOreintation);
-	
-	rotate(nextOreintation - current[2]); //rotate the difference from the current to the next oreintation so bot is in place to move
-	
-	forward(0); //move forward one block
-	blink(); //for testing
-	
-	updatePosition(final); //update the bots position
-}
-	
+//
+//void completePass(int route[][2], int routeLength){
+//	//This function takes in an array limited to 2 columns, and the length of the path that it will follow
+////This is the function that will be called in the loop 
+//	for(int distance; distance < routeLength; distance++){
+//		movePosition(route[distance]);
+//	} //When this loop is done, the robot should be in the correct position to pick up the object
+//	
+//	pickUp();
+//	
+//	for(int distance = routeLength; distance > 0; distance--){
+//		movePosition(route[distance]);
+//	} //When this loop is done, the robot will be back at its starting position
+//	
+//	//if statements COME BACK TO THIS
+//	
+//	drop();
+//}
+//	
+//void movePosition(int final[]){
+//	int difference[2] = {0, 0}; //initialize variable to hold distance between points at 0
+//	
+//	for(int i = 0; i < 2; i++){
+//		difference[i] = final[i] - currentPosition[i];
+//	} //Now the diference array has the distance to travel in x and y component
+//	
+//	if(difference[0] == 0 && difference[1] == 0)
+//		//Serial.println("Already in position");
+//		return;
+//
+//		int nextOreintation = final[2] //Find which way the bot needs to turn 
+//	//Serial.println("You would like to face: " + goalOreintation);
+//	
+//	rotate(nextOreintation - currentPosition[2]); //rotate the difference from the currentPosition to the next oreintation so bot is in place to move
+//	
+//	forward(); //move forward one block
+//	
+//	updatePosition(final); //update the bots position
+//}
+//	
 //Ending Celebration if it completes the completeRoute function
 void celebrate(){
 	
