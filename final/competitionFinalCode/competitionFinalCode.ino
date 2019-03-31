@@ -4,7 +4,7 @@
 
 
 //Digital
-#define leftEncoder   2
+//#define bumperInterupt   2
 #define rightEncoder  3
 #define leftDirection   4
 #define leftSpeed     5
@@ -33,37 +33,37 @@ void waitButton();
 void blink(){
   //blink LED 3 times, will be useful when watching how code functions
   for(int i = 0; i < 3; i++){
-    digitalWrite(LED, HIGH);
-    delay(100);
     digitalWrite(LED, LOW);
+    delay(100);
+    digitalWrite(LED, HIGH);
     delay(100);
   }
 }
 
 void setup(){
     Init();
-    getStartingPosition();
-    waitButton();
+    //getStartingPosition();
+    //waitButton();
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
 void Init(){
 	//Digital Pins
-	pinMode(leftEncoder, INPUT);
-    pinMode(rightEncoder, INPUT);
+	//attachInterrupt(bumperInterupt, stop, FALLING);
+//    pinMode(rightEncoder, INPUT);
     pinMode(leftDirection, OUTPUT);
     pinMode(leftSpeed, OUTPUT);
     pinMode(rightSpeed, OUTPUT);
     pinMode(rightDirection, OUTPUT);
 	pinMode(receivePin, INPUT);
 	//Servo Motor Controls
-	servoPan.attach(servoPanPin);
-	servoTilt.attach(servoTiltPin);
-	servoGrip.attach(servoGripPin);
-  servoPan.write(0);
-  servoTilt.write(0);
-  servoGrip.write(0);
-    pinMode(LED, OUTPUT);
+//	servoPan.attach(servoPanPin);
+//	servoTilt.attach(servoTiltPin);
+//	servoGrip.attach(servoGripPin);
+//  servoPan.write(0);
+//  servoTilt.write(0);
+//  servoGrip.write(0);
+//    pinMode(LED, OUTPUT);
 
 	//Analog Pins
     pinMode(leftIR, INPUT);
@@ -71,6 +71,7 @@ void Init(){
     pinMode(rightIR, INPUT);
 	pinMode(gripSensor, INPUT);
 	pinMode(bumper, INPUT);
+ pinMode(frontIR, INPUT);
 	IRReceiver.attach(receivePin, transmitPin); //transmit is random 
 	blink(); //will blink when setup is complete
 }
@@ -118,5 +119,8 @@ int getStartingPosition(){
 
 void loop(){
 	//keep loop empty so that we can test things
-	forward();
+  forward();
+  Serial.println(analogRead(frontIR));
+  delay(100);
+	
 }

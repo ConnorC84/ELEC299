@@ -49,7 +49,7 @@ fail safe functions to implement
 #define rightIR     A5
 
 QSerial IRReceiver;
-Servo servoGrip, servoTilt, servoPan;
+//Servo servoGrip, servoTilt, servoPan;
 
 //----------IR Line Sensing -----------------
 int L = 0;
@@ -69,11 +69,12 @@ int RCount = 0;
 const int bothBumpersHit = 0; //encoder circuit on analog pin
  
 //---------TUNING VALUES------------------------
+int collisionThreshold = 580;
 int gripThres = 100; //Test
 int maxAngle = 150; 
 
-int forwardSpeedLeft = 105; //retune on competition day
-int forwardSpeedRight = 105; //retune on competition day
+int forwardSpeedLeft = 200; //retune on competition day
+int forwardSpeedRight = 200; //retune on competition day
 
 int rotateSpeedLeft = 105;
 int rotateSpeedRight = 105;
@@ -158,29 +159,28 @@ void forward(){
 	analogWrite(leftSpeed, forwardSpeedLeft);
 	analogWrite(rightSpeed, forwardSpeedRight);
 	
-	int intersectionBool = 1;
+	int flag = 1;
 	
-	while(intersectionBool){
-		for(int i = 0; i < 5; i++){
-			L = analogRead(leftIR);
-			M = analogRead(centreIR);
-			R = analogRead(rightIR);
-		
-			if(L > IRThreshold){
-				IRValues[0] = 1;
-			}
-		
-			if(M > IRThreshold){
-				IRValues[1] = 1;
-			}
-		
-			if(R > IRThreshold){
-				IRValues[2] = 1;
-			}
-		}
-		
-		intersectionBool = intersection();
-		
+	while((analogRead(frontIR)) < collisionThreshold){
+//		for(int i = 0; i < 5; i++){
+//			L = analogRead(leftIR);
+//			M = analogRead(centreIR);
+//			R = analogRead(rightIR);
+//		
+//			if(L > IRThreshold){
+//				IRValues[0] = 1;
+//			}
+//		
+//			if(M > IRThreshold){
+//				IRValues[1] = 1;
+//			}
+//		
+//			if(R > IRThreshold){
+//				IRValues[2] = 1;
+//			}
+//		}
+//		
+//		intersectionBool = intersection();
 	}
 	analogWrite(leftSpeed, 0);
 	analogWrite(rightSpeed, 0);
@@ -189,12 +189,16 @@ void forward(){
 
 void rotate(int angles){
 	//Rotate function
+ 
 }
 
 void stop(){
+  analogWrite(leftSpeed, 0);
+  analogWrite(rightSpeed, 0);
+
 }
 
-
+/*
 //SERVO Functions
 void pickUp(){
 //	position temp[3] = currentPosition;
@@ -270,6 +274,7 @@ bool grab(int angleToRotate){
 		}
 	} // at this point the ball is gripped and the arm is raised
 }
+*/
 
 //MATRIX Functions
 void completeRoute(int startPoint){
