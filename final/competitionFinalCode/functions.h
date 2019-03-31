@@ -69,6 +69,7 @@ int RCount = 0;
 const int bothBumpersHit = 0; //encoder circuit on analog pin
  
 //---------TUNING VALUES------------------------
+const int collisionThreshold = 580;
 int gripThres = 100; //Test
 int maxAngle = 150; 
 
