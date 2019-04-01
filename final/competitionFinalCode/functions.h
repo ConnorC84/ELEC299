@@ -44,19 +44,19 @@ fail safe functions to implement
 #define frontIR     A0
 #define gripSensor  A1
 #define bumper      A2
-#define leftIR      A3
-#define centreIR    A4
-#define rightIR     A5
+#define centreIR    A3
+#define rightIR     A4
+#define leftIR      A5
 
 QSerial IRReceiver;
-//Servo servoGrip, servoTilt, servoPan;
+Servo servoGrip, servoTilt, servoPan;
 
 //----------IR Line Sensing -----------------
 int L = 0;
 int M = 0;
 int R = 0;
 int IRValues[3] = {0, 0, 0};
-const int IRThreshold = 900; //TESTED
+const int IRThresh = 900; //TESTED
 const int intersectionDriftTime = 100;
 //---------------------------------------------
 
@@ -73,8 +73,8 @@ int collisionThreshold = 580;
 int gripThres = 100; //Test
 int maxAngle = 150; 
 
-int forwardSpeedLeft = 200; //retune on competition day
-int forwardSpeedRight = 200; //retune on competition day
+int forwardSpeedLeft = 100; //retune on competition day
+int forwardSpeedRight = 100; //retune on competition day
 
 int rotateSpeedLeft = 105;
 int rotateSpeedRight = 105;
@@ -93,26 +93,32 @@ typedef struct {
 	int direction;
 } position;
 
-
 position currentPosition = {0, 0, 0};
 position balls[15] = {
 	{ 4, 0, 3},{ 3, 0, 3},{ 2, 0, 3},{ 1, 0, 3},{ 0, 0, 3},
 	{ 0, 0, 0},{ 0, 1, 0},{ 0, 2, 0},{ 0, 3, 0},{ 0, 4, 0},
 	{ 4, 4, 1},{ 3, 4, 1},{ 2, 4, 1},{ 1, 4, 1},{ 0, 4, 1}
 };
-
 position route = {};
-//All Functions
 
+//All Function protocols
+//Starting
+void blink();
+void Init();
+void waitButton();
+int getStartingPosition();
+
+//Driving
 void lineSensor(); //This works
 int intersection(); //I think this works *test it*
 void forward(); // need to update intersection 
 void backward(); //maybe
 void move(int direction, long speed); //combine forward and backward into this
-void speedAdjust();	
+void lineTrack();	
+bool notAtInt();
 void rotate(int direction);
-void stop(); //sets direction to forward and speed to 0
-//Servo stuff is good 
+void stop(); 
+//Servo
 void pickUp();
 void drop();
 bool grab(int angleToRotate);
@@ -120,119 +126,217 @@ bool grab(int angleToRotate);
 void movePosition(int final[]);
 void completePass(int route[][2], int routeLength);
 void completeRoute(int startPoint);
+//-------------------------------------------------
 
+//Starting Functions
+void blink(){
+  //blink LED 3 times, will be useful when watching how code functions
+  for(int i = 0; i < 3; i++){
+    digitalWrite(LED, LOW);
+    delay(100);
+    digitalWrite(LED, HIGH);
+    delay(100);
+  }
+}
+
+void Init(){
+  //Digital Pins
+  //attachInterrupt(bumperInterupt, stop, FALLING);
+//    pinMode(rightEncoder, INPUT);
+    pinMode(leftDirection, OUTPUT);
+    pinMode(leftSpeed, OUTPUT);
+    pinMode(rightSpeed, OUTPUT);
+    pinMode(rightDirection, OUTPUT);
+  pinMode(receivePin, INPUT);
+  //Servo Motor Controls
+  servoPan.attach(servoPanPin);
+  servoTilt.attach(servoTiltPin);
+  servoGrip.attach(servoGripPin);
+  servoPan.write(90);
+  servoTilt.write(90);
+  servoGrip.write(90);
+    pinMode(LED, OUTPUT);
+
+  //Analog Pins
+    pinMode(leftIR, INPUT);
+    pinMode(centreIR, INPUT);
+    pinMode(rightIR, INPUT);
+  pinMode(gripSensor, INPUT);
+  pinMode(bumper, INPUT);
+ pinMode(frontIR, INPUT);
+  IRReceiver.attach(receivePin, transmitPin); //transmit is random 
+  blink(); //will blink when setup is complete
+  Serial.begin(9600);
+}
+
+void waitButton(){ //for testing, remove wrapper for competition
+	while(true){
+		if(analogRead(bumper) < 550){
+		Serial.print("Pushbutton pressed");
+		blink();
+		delay(200);
+		return;
+        }
+		
+		Serial.print("Waiting for press");	
+    }
+}
+
+int getStartingPosition(){
+  //Function that recieves the signal from the IR Beacon. 
+  //Once it has received the same char 10 times it will allow the program to initialize
+  
+  int counter = 0;
+  int prevTemp = 0;
+  int temp = IRReceiver.receive(200); //receive the IR ASCII 
+  char start; //placeholder for starting position
+  
+  do 
+  {   
+    if(temp > 0 && temp < 60){ //valid character coming in
+      if(prevTemp == temp){
+        counter++;
+      }
+      
+      //Last iteration!
+      if(counter == 10){
+        start = (int)temp; //We have our starting position
+      }
+    }
+    prevTemp = temp;
+  } while (counter <= 10);
+  
+  delay(500);
+  return int (start);
+}
+//-------------------------------------------------
 
 //Driving Functions
+void forward(){
+  int lineCounter = 0;
+  digitalWrite(leftDirection, HIGH);
+  digitalWrite(rightDirection, HIGH);
+  int flag = 1;
+  
+  while((analogRead(frontIR)) < collisionThreshold){
+    while(notAtInt()){
+      analogWrite(leftSpeed, forwardSpeedLeft);
+      analogWrite(rightSpeed, forwardSpeedRight);
+      lineTrack();
+      delay(50);
+    }     
+}
+  //if collision detected stop
+  analogWrite(leftSpeed, 0);
+  analogWrite(rightSpeed, 0);
+  
+  //some code to check if were at the point we want to be at or if it was just detecting a collision?
+
+}
+
 void lineSensors(){
   for(int i = 0; i < 5; i++){
     L = analogRead(leftIR);
     M = analogRead(centreIR);
     R = analogRead(rightIR);
     
-    if(L > IRThreshold){
+    if(L > IRThresh){
       IRValues[0] = 1;
     }
     
-    if(M > IRThreshold){
+    if(M > IRThresh){
       IRValues[1] = 1;
     }
     
-    if(R > IRThreshold){
+    if(R > IRThresh){
       IRValues[2] = 1;
     }
     delay(15);
   }
 }
 
-int intersection(){
-  if(IRValues[0] == 1 && IRValues[1] == 1 && IRValues[2] == 1){
-    return 0;
+void lineTrack(){
+  //Serial.println("1");
+  int L = analogRead(leftIR);
+  int C = analogRead(centreIR);
+  int R = analogRead(rightIR);
+
+  if (L > IRThresh)
+  {
+    Serial.println("left drift");
+    int rSpeed = 75;
+    int lSpeed = 100;
+    analogWrite(leftSpeed, lSpeed);
+    analogWrite(rightSpeed, rSpeed);
   }
-  
-  return 1;
+  else if(R > IRThresh)
+  {
+    Serial.println("right drift");
+    int lSpeed = 75;
+    int rSpeed = 100;
+    analogWrite(leftSpeed, lSpeed);
+    analogWrite(rightSpeed, rSpeed);
+  }
+  else 
+  {
+  }
 }
 
-void forward(){
-	int lineCounter = 0;
-	digitalWrite(leftDirection, HIGH);
-	digitalWrite(rightDirection, HIGH);
-	analogWrite(leftSpeed, forwardSpeedLeft);
-	analogWrite(rightSpeed, forwardSpeedRight);
-	
-	int flag = 1;
-	
-	while((analogRead(frontIR)) < collisionThreshold){
-//		for(int i = 0; i < 5; i++){
-//			L = analogRead(leftIR);
-//			M = analogRead(centreIR);
-//			R = analogRead(rightIR);
-//		
-//			if(L > IRThreshold){
-//				IRValues[0] = 1;
-//			}
-//		
-//			if(M > IRThreshold){
-//				IRValues[1] = 1;
-//			}
-//		
-//			if(R > IRThreshold){
-//				IRValues[2] = 1;
-//			}
-//		}
-//		
-//		intersectionBool = intersection();
-	}
-	//if collision detected stop
-	analogWrite(leftSpeed, 0);
-	analogWrite(rightSpeed, 0);
-	
-	//some code to check if were at the point we want to be at or if it was just detecting a collision?
-
+bool notAtInt(){
+  int L = analogRead(leftIR);
+  int C = analogRead(centreIR);
+  int R = analogRead(rightIR);
+  if (L > IRThresh && C > IRThresh && R > IRThresh)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  } 
 }
 
 void rotate(int angles){
 	//Rotate function
- 
 }
 
 void stop(){
   analogWrite(leftSpeed, 0);
   analogWrite(rightSpeed, 0);
-
 }
+//-------------------------------------------------
 
-/*
 //SERVO Functions
 void pickUp(){
 //	position temp[3] = currentPosition;
 	
 	//moveForward until bumpers hit
-	forward();
+	//forward();
 	delay(100);
 	//slightly reverse
-	backward();
+	//backward();
 	delay(100);
 	//resetMotors(); //reset the motors to be forward now
 	
-	analogWrite(leftSpeed, forwardSpeedLeft);
-	analogWrite(rightSpeed, forwardSpeedRight);
-	
-	delay(100);
+//	analogWrite(leftSpeed, forwardSpeedLeft);
+//	analogWrite(rightSpeed, forwardSpeedRight);
+//	
+//	delay(100);
 	stop();
 	
 	//test different rotations to grip the ball
-	if(grab(90)){
+	//if(grab(90)){
 		if(grab(105)){
 			if(grab(75)){
       //nothing
-			}
+		//	}
 		}
 	} //by here it will have had to pick up a ball!
 
 	servoPan.write(90);
 	
-	backward();
-	rotate(180); 
+//	backward();
+	//rotate(180); 
 	forward();
 	//currentPosition[2] = (temp[2] + 2) % 4; //reset oreintation in global position array
 }
@@ -277,7 +381,7 @@ bool grab(int angleToRotate){
 		}
 	} // at this point the ball is gripped and the arm is raised
 }
-*/
+//-------------------------------------------------
 
 //MATRIX Functions
 void completeRoute(int startPoint){
@@ -298,46 +402,7 @@ void completeRoute(int startPoint){
 			break;
 	}
 }
-//
-//void completePass(int route[][2], int routeLength){
-//	//This function takes in an array limited to 2 columns, and the length of the path that it will follow
-////This is the function that will be called in the loop 
-//	for(int distance; distance < routeLength; distance++){
-//		movePosition(route[distance]);
-//	} //When this loop is done, the robot should be in the correct position to pick up the object
-//	
-//	pickUp();
-//	
-//	for(int distance = routeLength; distance > 0; distance--){
-//		movePosition(route[distance]);
-//	} //When this loop is done, the robot will be back at its starting position
-//	
-//	//if statements COME BACK TO THIS
-//	
-//	drop();
-//}
-//	
-//void movePosition(int final[]){
-//	int difference[2] = {0, 0}; //initialize variable to hold distance between points at 0
-//	
-//	for(int i = 0; i < 2; i++){
-//		difference[i] = final[i] - currentPosition[i];
-//	} //Now the diference array has the distance to travel in x and y component
-//	
-//	if(difference[0] == 0 && difference[1] == 0)
-//		//Serial.println("Already in position");
-//		return;
-//
-//		int nextOreintation = final[2] //Find which way the bot needs to turn 
-//	//Serial.println("You would like to face: " + goalOreintation);
-//	
-//	rotate(nextOreintation - currentPosition[2]); //rotate the difference from the currentPosition to the next oreintation so bot is in place to move
-//	
-//	forward(); //move forward one block
-//	
-//	updatePosition(final); //update the bots position
-//}
-//	
+
 //Ending Celebration if it completes the completeRoute function
 void celebrate(){
 	
