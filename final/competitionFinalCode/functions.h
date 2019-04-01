@@ -41,12 +41,12 @@ fail safe functions to implement
 #define transmitPin   	15
 
 //Analog
-#define frontIR     A0
-#define gripSensor  A1
-#define bumper      A2
-#define centreIR    A3
-#define rightIR     A4
-#define leftIR      A5
+#define leftIR            A0
+#define centreIR          A1
+#define rightIR           A2
+#define gripSensor        A3
+#define bumper            A4
+#define frontIR           A5
 
 QSerial IRReceiver;
 Servo servoGrip, servoTilt, servoPan;
@@ -88,8 +88,8 @@ int bothBumpers = 0; //if both bumpers are pressed
 
 //Matrix Stuff
 typedef struct {
-	int R;
-	int C;
+	int x;
+	int y;
 	int direction;
 } position;
 
@@ -99,7 +99,8 @@ position balls[15] = {
 	{ 0, 0, 0},{ 0, 1, 0},{ 0, 2, 0},{ 0, 3, 0},{ 0, 4, 0},
 	{ 4, 4, 1},{ 3, 4, 1},{ 2, 4, 1},{ 1, 4, 1},{ 0, 4, 1}
 };
-position route = {};
+
+position routeTest[2] = {};
 
 //All Function protocols
 //Starting
@@ -109,12 +110,14 @@ void waitButton();
 int getStartingPosition();
 
 //Driving
-void lineSensor(); //This works
 int intersection(); //I think this works *test it*
 void forward(); // need to update intersection 
+bool collisionDetected();
 void backward(); //maybe
+bool lostLine();
+void findLine();
 void move(int direction, long speed); //combine forward and backward into this
-void lineTrack();	
+void followLine();	
 bool notAtInt();
 void rotate(int direction);
 void stop(); 
@@ -178,7 +181,7 @@ void waitButton(){ //for testing, remove wrapper for competition
 		return;
         }
 		
-		Serial.print("Waiting for press");	
+		Serial.println("Waiting for press");	
     }
 }
 
@@ -212,51 +215,70 @@ int getStartingPosition(){
 //-------------------------------------------------
 
 //Driving Functions
-void forward(){
+void forward(){ //function drives from one intersection to the next
   int lineCounter = 0;
   digitalWrite(leftDirection, HIGH);
   digitalWrite(rightDirection, HIGH);
-  int flag = 1;
-  
-  while((analogRead(frontIR)) < collisionThreshold){
-    while(notAtInt()){
+  bool flag1 = true;
+  bool flag2 = true;
+  do {
       analogWrite(leftSpeed, forwardSpeedLeft);
       analogWrite(rightSpeed, forwardSpeedRight);
-      lineTrack();
-      delay(50);
-    }     
-}
-  //if collision detected stop
+      followLine();
+	    flag1 = notAtInt();
+
+//     if(lostLine()){ //someone fix this :) 
+//      Serial.print("Lost line!");
+//      stop();
+//        delay(200);
+//        findLine();
+//     }
+	  if(collisionDetected()){
+        stop();
+        delay(2000);
+      }     
+	} while(flag1);
+
+  int timer = millis();
+  while(millis() < (timer + 1000)){
+    analogWrite(leftSpeed, forwardSpeedLeft);
+    analogWrite(rightSpeed, forwardSpeedRight); 
+  }
+  //if collision detected or at intersection
   analogWrite(leftSpeed, 0);
   analogWrite(rightSpeed, 0);
-  
+  delay(100);
+  Serial.print("At Intersection!");
   //some code to check if were at the point we want to be at or if it was just detecting a collision?
-
 }
 
-void lineSensors(){
-  for(int i = 0; i < 5; i++){
-    L = analogRead(leftIR);
-    M = analogRead(centreIR);
-    R = analogRead(rightIR);
-    
-    if(L > IRThresh){
-      IRValues[0] = 1;
-    }
-    
-    if(M > IRThresh){
-      IRValues[1] = 1;
-    }
-    
-    if(R > IRThresh){
-      IRValues[2] = 1;
-    }
-    delay(15);
+bool lostLine(){
+  int L = analogRead(leftIR);
+  int C = analogRead(centreIR);
+  int R = analogRead(rightIR);
+  if (L < IRThresh && C < IRThresh && R < IRThresh)
+  {
+    return true;
   }
+  else
+  {
+    return false;
+  } 
 }
 
-void lineTrack(){
-  //Serial.println("1");
+void findLine(){
+  //backtrack and find the line code
+}
+
+bool collisionDetected(){
+  if (digitalRead(frontIR) == 1){
+    return true;
+  }
+  return false;
+}
+
+void followLine(){
+  Serial.println("Following Line");
   int L = analogRead(leftIR);
   int C = analogRead(centreIR);
   int R = analogRead(rightIR);
@@ -266,19 +288,31 @@ void lineTrack(){
     Serial.println("left drift");
     int rSpeed = 75;
     int lSpeed = 100;
+    delay(30);
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
+    return;
   }
   else if(R > IRThresh)
   {
     Serial.println("right drift");
     int lSpeed = 75;
     int rSpeed = 100;
+    delay(30);
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
+    return;
   }
   else 
   {
+	//on line 
+  int lSpeed = 100;
+  int rSpeed = 100;
+  Serial.println("on line");
+  delay(10);
+  analogWrite(leftSpeed, lSpeed);
+  analogWrite(rightSpeed, rSpeed);
+	return;
   }
 }
 
@@ -296,9 +330,42 @@ bool notAtInt(){
   } 
 }
 
-void rotate(int angles){
+void rotate(int angle){
 	//Rotate function
-}
+  switch(angle){
+    case 1:
+      Serial.println("Turning Right");
+      delay(100);
+      digitalWrite(leftDirection, LOW);
+      digitalWrite(rightDirection, HIGH);
+  
+        analogWrite(leftSpeed, forwardSpeedLeft);
+        analogWrite(rightSpeed, forwardSpeedRight);
+  
+      delay(500);
+      while(analogRead(centreIR) < IRThresh)
+      {
+        //rotating 
+      }
+      Serial.println("Turned Right");
+      stop();
+      break;
+    case -1:
+      digitalWrite(leftDirection, HIGH);
+      digitalWrite(rightDirection, LOW);
+  
+      analogWrite(leftSpeed, forwardSpeedLeft);
+      analogWrite(rightSpeed, forwardSpeedRight);
+  
+      delay(500);
+      while(analogRead(centreIR) < IRThresh)
+      {
+        //rotating 
+      }
+      stop();
+      break; 
+    }
+  }
 
 void stop(){
   analogWrite(leftSpeed, 0);
@@ -384,6 +451,7 @@ bool grab(int angleToRotate){
 //-------------------------------------------------
 
 //MATRIX Functions
+/*
 void completeRoute(int startPoint){
 	switch(startPoint){
 		case 1:
@@ -403,7 +471,36 @@ void completeRoute(int startPoint){
 	}
 }
 
+void completePath(position path[], int pathLength) {
+  //int pathLenght = (sizeof(path)/sizeof(path[0]));
+  Serial.println("Path length is: " + pathLength);
+
+  for (int i = 0; i < pathLength; i++) {
+    moveToCoordinate(path->x[i], path->y_coordinate[i]);
+  }
+  pickUp();
+  for (int i = pathLength - 1; i >= 0; i--) {
+    moveToCoordinate(path[i]);
+  }
+  
+  drop();
+}
+
+void moveToCoordinate(position coordinate){
+
+  //find the difrence betweencordinateinates
+  position cordinateDifference = {0, 0, 0};
+  cordinateDifference.x = cordinate.x - currentPosition.x;
+  cordinateDifference.y = cordinate.y - currentPosition.y;
+  cordinateDifference.direction = cordinate.direction - currentPosition.direction;
+  
+  //first check that the cordinateinates are adjecent and we can make it there
+ 
+  int targetOrientation;
+}
+
 //Ending Celebration if it completes the completeRoute function
 void celebrate(){
 	
 }
+*/
