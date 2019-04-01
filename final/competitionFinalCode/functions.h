@@ -182,8 +182,11 @@ void forward(){
 //		
 //		intersectionBool = intersection();
 	}
+	//if collision detected stop
 	analogWrite(leftSpeed, 0);
 	analogWrite(rightSpeed, 0);
+	
+	//some code to check if were at the point we want to be at or if it was just detecting a collision?
 
 }
 
