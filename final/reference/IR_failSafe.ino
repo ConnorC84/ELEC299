@@ -21,6 +21,8 @@ bool irNotWorking(){
             else{
                 i = false;
             }
+          delay(100);
+          turnRight();
           turnRight();
             if(digitalRead(frontIR) == HIGH){
                 j = true; 
@@ -28,6 +30,7 @@ bool irNotWorking(){
             else{
                 j = false; 
             }
+          turnLeft();
         return pos;
     }  
 
@@ -44,20 +47,17 @@ bool irNotWorking(){
 }
 
 void main (){
-//calls function if value from IR Sesnsor is not the ASCI character for 
+//calls function if value from IR Sesnsor is not the ASCI character for 0,1,2
 int val;
 int count;
 
-   
-    
-        if (val < 48 || val > 50){ //check for invalid character reading - it reads zeros or negative 1 if no value is read so this should cover that?
+   do{
+        if (val < 48 || val > 50){ //check for invalid character reading 
             count++;
         }
         if(count == 10){
-            irNotWorking(); //if the incorrect value is read more 10 times assume IR is doing what it's supposed to 
+            irNotWorking(); //if the incorrect value is read more 10 times assume IR is not working 
         }
-         while(count < 10 ){
-         delay(300);
-         }
-
+        delay(300);
+      { while(count <= 10 );
 }
