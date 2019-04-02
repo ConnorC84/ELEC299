@@ -44,7 +44,7 @@ bool irNotWorking(){
 }
 
 void main (){
-//calls function if value from IR Sesnsor is not the ASCI character for 
+//calls function if value from IR Sesnsor is not the ASCI character for 0,1,2
 int val;
 int count;
 
