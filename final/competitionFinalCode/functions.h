@@ -70,8 +70,9 @@ const int bothBumpersHit = 0; //encoder circuit on analog pin
  
 //---------TUNING VALUES------------------------
 const int intersectionDelay = 700;
+const int wallThreshold = 200;
 int collisionThreshold = 580;
-int gripThres = 100; //Test
+int gripThres = 700; //Test
 int maxAngle = 150; 
 
 int forwardSpeedLeft = 100; //retune on competition day
@@ -228,12 +229,21 @@ void forward(){ //function drives from one intersection to the next
       followLine();
 	    flag1 = notAtInt();
 
-     if(lostLine()){ //someone fix this :) 
-      Serial.print("Lost line!");
+     /*if(lostLine()){ //someone fix this :)
+       
+      Serial.println(analogRead(leftIR));
+      Serial.println(analogRead(centreIR));
+      Serial.println(analogRead(rightIR));
+
+
+      delay(1000);
+      Serial.println("Lost line!");
+      
       stop();
         delay(200);
         findLine();
      }
+     */
 
 	      if(collisionDetected()){
           Serial.println("Collision detected");
@@ -272,7 +282,27 @@ bool lostLine(){
 
 void findLine(){
   //backtrack and find the line code
+  int L = analogRead(leftIR);
+  int C = analogRead(centreIR);
+  int R = analogRead(rightIR);
+  bool noLine = true;                                       //check if it detects a line on any of the 3 sensors
+  digitalWrite(leftDirection, LOW);                         // set direction backwards
+  digitalWrite(rightDirection, LOW);
+  while(noLine){
+    if (L < IRThresh && C < IRThresh && R < IRThresh)       //once it finds the line, exit the loop and execute follow line code
+    {
+      analogWrite(leftSpeed, forwardSpeedLeft);
+      analogWrite(rightSpeed, forwardSpeedRight); 
+    }
+    else {
+      Serial.println("Found line");
+      stop();
+      noLine=false;
+    }
+  }
+  //followLine();
 }
+
 
 bool collisionDetected(){
   if (digitalRead(frontIR) == 1){
@@ -372,66 +402,75 @@ void stop(){
   analogWrite(leftSpeed, 0);
   analogWrite(rightSpeed, 0);
 }
+
+void backTrack(){
+	digitalWrite(leftDirection, LOW);
+      digitalWrite(rightDirection, LOW);
+	  analogWrite(leftSpeed, forwardSpeedLeft);
+      analogWrite(rightSpeed, forwardSpeedRight);
+	  
+	  int time = millis();
+	  while(millis() < (time + wallThreshold)){
+	  }
+  
+}
+	
+void drive(){
+	digitalWrite(leftDirection, HIGH);
+      digitalWrite(rightDirection, HIGH);
+	  analogWrite(leftSpeed, forwardSpeedLeft);
+      analogWrite(rightSpeed, forwardSpeedRight);
+}
+	
 //-------------------------------------------------
 
 //SERVO Functions
 void pickUp(){
-//	position temp[3] = currentPosition;
-	
-	//moveForward until bumpers hit
-	//forward();
-	delay(100);
-	//slightly reverse
-	//backward();
-	delay(100);
-	//resetMotors(); //reset the motors to be forward now
-	
-//	analogWrite(leftSpeed, forwardSpeedLeft);
-//	analogWrite(rightSpeed, forwardSpeedRight);
-//	
-//	delay(100);
+  servoTilt.write(180);
+	while(analogRead(bumper) != 0){
+		drive();
+    followLine();
+	}
 	stop();
-	
-	//test different rotations to grip the ball
-	//if(grab(90)){
-		if(grab(105)){
-			if(grab(75)){
-      //nothing
-		//	}
-		}
-	} //by here it will have had to pick up a ball!
-
-	servoPan.write(90);
-	
-//	backward();
-	//rotate(180); 
+	backTrack();
+	stop();
+  servoGrip.write(0);
+  servoTilt.write(70);
+	int grip = 0;
+  int gripThres = 1023;
+  int currentAngle = 0;
+  while(grip < gripThres)
+  {
+    grip = analogRead(gripSensor);
+    Serial.println(grip);
+    currentAngle++; //increase angle for servo grip (make it close)
+    servoGrip.write(currentAngle);
+    delay(40);  
+  }
+  servoTilt.write(160);
+  delay(5000);
+	rotate(1);
 	forward();
-	//currentPosition[2] = (temp[2] + 2) % 4; //reset oreintation in global position array
 }
 
 void drop(){
-	//position temp = currentPosition[2];
-	forward();
+	servoTilt.write(180);
+  while(analogRead(bumper) != 0){
+    drive();
+  }
+  stop();
 	delay(200);
 	servoTilt.write(180);
 	delay(500);
-	servoTilt.write(100);
 	servoTilt.write(0);
-	delay(500);
-	
-	backward();
-	
-	delay(300);
-	rotate(180);
-	delay(200);
-//	currentPosition[2] = (temp + 2) % 4;
-	servoTilt.write(180);
-	forward();
+	delay(100);
+  servoGrip.write(0);
+  rotate(1);	
 }
 
 bool grab(int angleToRotate){
 	angleToRotate = 0;
-	servoPan.write(angleToRotate); //rotate the arm
+//	servoPan.write(angleToRotate); //rotate the arm
 	servoGrip.write(angleToRotate); //open up the grip to start
 	delay(500);
 	servoTilt.write(70); //move arm down into position

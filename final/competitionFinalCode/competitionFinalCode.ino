@@ -28,23 +28,24 @@
 
 void setup(){
     Init();
-    //getStartingPosition();
+    int startingPosition = getStartingPosition();
     waitButton();
+	//test path
     forward();
-    rotate(1);
-    forward();
-    rotate(1);
-    forward();
-    rotate(-1);
-    forward();
-    rotate(-1);
-    forward();
-    rotate(1);
-    forward();
+	rotate(1);
+	forward();
+	pickUp();
+ forward();
+ forward();
+ rotate(-1);
+ forward();
+ drop();
+    
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
 void loop(){
+	
 	//keep loop empty so that we can test things
     
   
