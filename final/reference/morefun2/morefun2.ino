@@ -362,23 +362,94 @@ void waitButton(){ //for testing, remove wrapper for competition
 
 void robotL()
 {
+
   //dice 1
+
+  
   nextInt();
   nextInt();
   nextInt();
   nextInt();
   nextInt();
+  wallStuff();
+  nextInt();
+  nextInt();
+  nextInt();
+  nextInt();
+  dropAtHomeV2();
 
   //dice 2
+  
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnLeft();
+  stop();
+  nextInt();
+  wallStuff();
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnRight();
+  stop();
+  dropAtHome();
+  
 
 
   //dice 3
-
+  
+  nextInt();
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnRight();
+  stop();
+  nextInt();
+  nextInt();
+  nextInt();
+  wallStuff();
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnLeft();
+  stop();
+  nextInt();
+  dropAtHome();
 
   //dice 4
+  
+  nextInt();
+  nextInt();
+  nextInt();
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnRight();
+  stop();
+  nextInt();
+  wallStuff();
+  nextInt();
+  stop();
+  forceForward();
+  stop();
+  turnLeft();
+  stop();
+  nextInt();
+  nextInt();
+  nextInt();
+  dropAtHome();
+  
+  
 
 
   //dice 5
+
+
   nextInt();
   nextInt();
   nextInt();
@@ -398,7 +469,7 @@ void robotL()
   nextInt();
   nextInt();
   dropAtHome();
-  
+ 
 }
 
   void robotC()
