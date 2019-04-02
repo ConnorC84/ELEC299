@@ -553,3 +553,98 @@ void robotL()
       dropAtHome();
   }
   
+//this is the code for the far right robot
+void robotR(){
+  //get first dice on the far wall - this works 
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      wallStuff(); //pick up dice hopefully
+      //turnLeft();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt(); 
+      dropAtHome();
+
+ //get second dice - works! 
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight(); 
+      nextInt();
+      wallStuff();
+      forceForward();
+      nextInt();
+      stop();
+      forceForward();
+      turnLeft();
+      dropAtHome();
+
+
+//get dice 5 -- swaped 3 & five to facilitate the process of getting the thir
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      nextInt();
+      nextInt();
+      nextInt();
+      wallStuff();
+      nextInt();
+      stop();
+      forceForward();
+      turnRight();
+      nextInt();
+      nextInt();
+      dropAtHome();
+
+//get dice 4
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      nextInt();
+      wallStuff();
+      nextInt();
+      stop(); 
+      forceForward();
+      turnRight();
+      nextInt();
+      nextInt();
+      dropAtHome();
+
+//get dice 3
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      nextInt();
+      nextInt();
+      wallStuff();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      turnRight();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      dropAtHome();
+    
+}
