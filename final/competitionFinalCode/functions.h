@@ -69,6 +69,7 @@ int RCount = 0;
 const int bothBumpersHit = 0; //encoder circuit on analog pin
  
 //---------TUNING VALUES------------------------
+const int intersectionDelay = 700;
 int collisionThreshold = 580;
 int gripThres = 100; //Test
 int maxAngle = 150; 
@@ -242,7 +243,7 @@ void forward(){ //function drives from one intersection to the next
 	} while(flag1);
 
   int timer = millis();
-  while(millis() < (timer + 1000)){
+  while(millis() < (timer + intersectionDelay)){
 
     Serial.println("Forcing forward..");
     analogWrite(leftSpeed, forwardSpeedLeft);
@@ -289,19 +290,27 @@ void followLine(){ //still needs to debug
   if (L > IRThresh)
   {
     Serial.println("left drift");
-   // delay(100);
+
     int rSpeed = 75;
-    int lSpeed = 100;
+    int lSpeed = 200;
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
+
+    while(analogRead(centreIR) < IRThresh){
+      //
+    }
   }
   else if(R > IRThresh)
   {
     Serial.println("right drift");
     int lSpeed = 75;
-    int rSpeed = 100;
+    int rSpeed = 200;
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
+
+    while(analogRead(centreIR) < IRThresh ){
+      //
+    }
   }
   else 
   {
@@ -444,57 +453,23 @@ bool grab(int angleToRotate){
 
 //MATRIX Functions
 /*
-void completeRoute(int startPoint){
-	switch(startPoint){
-		case 1:
-//			completePath(testpath1_1, pathLength[1 - 1][0]);
-//			completePath(testpath1_2, pathLength[1 - 1][1]);
-//			completePath(testpath1_3, pathLength[1 - 1][2]);
-//			completePath(testpath1_4, pathLength[1 - 1][3]);
-//			completePath(testpath1_5, pathLength[1 - 1][4]);
-			break;
-		case 2:
-			//fill in
-			break;
-		
-		case 3:
-			//fil in
-			break;
-	}
-}
-
-void completePath(position path[], int pathLength) {
+void completePath(int path[][2], int pathLength) {
   //int pathLenght = (sizeof(path)/sizeof(path[0]));
-  Serial.println("Path length is: " + pathLength);
+  Serial.println(pathLength);
 
   for (int i = 0; i < pathLength; i++) {
-    moveToCoordinate(path->x[i], path->y_coordinate[i]);
+    moveToCordinate(path[i]);
   }
-  pickUp();
-  
+  pickUpDice();
   for (int i = pathLength - 1; i >= 0; i--) {
-    moveToCoordinate(path[i]);
+    moveToCordinate(path[i]);
   }
-  
-  drop();
-}
-
-void moveToCoordinate(position coordinate){
-
-  //find the difrence betweencordinateinates
-  position cordinateDifference;
-  
-  cordinateDifference.x = cordinate.x - currentPosition.x;
-  cordinateDifference.y = cordinate.y - currentPosition.y;
-  cordinateDifference.direction = cordinate.direction - currentPosition.direction;
-  
-  //first check that the cordinateinates are adjecent and we can make it there
- 
-  int targetOrientation;
-}
-
-//Ending Celebration if it completes the completeRoute function
-void celebrate(){
-	
+  if(botCoords[2]==1){
+    RotateBot(1);
+  }
+  if(botCoords[2]==3){
+    RotateBot(-1);
+  }
+  GoalDrop();
 }
 */

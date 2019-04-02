@@ -30,13 +30,23 @@ void setup(){
     Init();
     //getStartingPosition();
     waitButton();
+    forward();
+    rotate(1);
+    forward();
+    rotate(1);
+    forward();
+    rotate(-1);
+    forward();
+    rotate(-1);
+    forward();
+    rotate(1);
+    forward();
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
 void loop(){
 	//keep loop empty so that we can test things
-  forward();
-    rotate(1);
+    
   
 //  Serial.print(analogRead(leftSpeed));
 //  Serial.print("\t");
