@@ -50,11 +50,11 @@ int count;
 
    
     
-        if (val < 48 || val > 50){ //check for invalid character reading - it reads zeros or negative 1 if no value is read so this should cover that?
+        if (val < 48 || val > 50){ //check for invalid character reading 
             count++;
         }
         if(count == 10){
-            irNotWorking(); //if the incorrect value is read more 10 times assume IR is doing what it's supposed to 
+            irNotWorking(); //if the incorrect value is read more 10 times assume IR is not working 
         }
          while(count < 10 ){
          delay(300);
