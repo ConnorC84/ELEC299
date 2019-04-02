@@ -21,6 +21,8 @@ bool irNotWorking(){
             else{
                 i = false;
             }
+          delay(100);
+          turnRight();
           turnRight();
             if(digitalRead(frontIR) == HIGH){
                 j = true; 
@@ -28,6 +30,7 @@ bool irNotWorking(){
             else{
                 j = false; 
             }
+          turnLeft();
         return pos;
     }  
 
@@ -48,16 +51,13 @@ void main (){
 int val;
 int count;
 
-   
-    
+   do{
         if (val < 48 || val > 50){ //check for invalid character reading 
             count++;
         }
         if(count == 10){
             irNotWorking(); //if the incorrect value is read more 10 times assume IR is not working 
         }
-         while(count < 10 ){
-         delay(300);
-         }
-
+        delay(300);
+      { while(count <= 10 );
 }
