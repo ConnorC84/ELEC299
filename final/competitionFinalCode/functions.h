@@ -56,7 +56,7 @@ int L = 0;
 int M = 0;
 int R = 0;
 int IRValues[3] = {0, 0, 0};
-const int IRThresh = 875; //TESTED
+const int IRThresh = 980; //TESTED
 const int intersectionDriftTime = 100;
 //---------------------------------------------
 
@@ -115,6 +115,7 @@ int getStartingPosition();
 int intersection(); //I think this works *test it*
 void forward(int number); // need to update intersection 
 bool collisionDetected();
+void centerOnInt();
 void backward(); //maybe
 bool lostLine();
 void findLine();
@@ -206,6 +207,7 @@ int getStartingPosition(){
       //Last iteration!
       if(counter == 10){
         start = (int)temp; //We have our starting position
+        Serial.println("Starting position is: " + start);
       }
     }
     prevTemp = temp;
@@ -218,14 +220,13 @@ int getStartingPosition(){
 
 //Driving Functions
 void forward(int num){ //function drives from one intersection to the next
+  Serial.println("Driving forward...");
   digitalWrite(leftDirection, HIGH);
   digitalWrite(rightDirection, HIGH);
   for(int i = 0; i < num; i++){
   int timer = millis();
   bool flag1 = true;
   do {
-      
-      Serial.println("Driving...");
       analogWrite(leftSpeed, forwardSpeedLeft);
       analogWrite(rightSpeed, forwardSpeedRight);
       followLine();
@@ -233,44 +234,32 @@ void forward(int num){ //function drives from one intersection to the next
 //      if(millis() < timer + 1000){
 //        flag1 = true;
 //      }
+      if(lostLine()){
+        Serial.println("Lost line!");
+      }
 
-     /*if(lostLine()){ //someone fix this :)
-       
-      Serial.println(analogRead(leftIR));
-      Serial.println(analogRead(centreIR));
-      Serial.println(analogRead(rightIR));
-
-
-      delay(1000);
-      Serial.println("Lost line!");
-      
-      stop();
-        delay(200);
-        findLine();
-     }
-     */
-
-	      if(collisionDetected()){
+ 	      if(collisionDetected()){
           Serial.println("Collision detected");
           stop();
           delay(2000);
         }     
 	} while(flag1);
 
+  Serial.println("At Next Intersection!");
+  centerOnInt();
+  stop();
+  delay(1000); 
+  }
+  //some code to check if were at the point we want to be at or if it was just detecting a collision?
+}
+
+void centerOnInt(){
   int timer = millis();
   while(millis() < (timer + intersectionDelay)){
-
     Serial.println("Forcing forward..");
     analogWrite(leftSpeed, forwardSpeedLeft);
     analogWrite(rightSpeed, forwardSpeedRight); 
   }
-  //if collision detected or at intersection
-  stop();
-  delay(1000);
-  Serial.print("At Intersection!");
-  
-  }
-  //some code to check if were at the point we want to be at or if it was just detecting a collision?
 }
 
 bool lostLine(){
@@ -310,7 +299,6 @@ void findLine(){
   //followLine();
 }
 
-
 bool collisionDetected(){
   if (digitalRead(frontIR) == 1){
     return true;
@@ -319,7 +307,7 @@ bool collisionDetected(){
 }
 
 void followLine(){ //still needs to debug
-  //Serial.println("1");
+ Serial.println("Line tracking...");
   int L = analogRead(leftIR);
   int C = analogRead(centreIR);
   int R = analogRead(rightIR);
@@ -388,6 +376,27 @@ void rotate(int angle){
       Serial.println("Turned Right");
       stop();
       break;
+
+    case 0:
+      //This is for rotating 180 degrees 
+      Serial.println("Turning around");
+      delay(100);
+      digitalWrite(leftDirection, LOW);
+      digitalWrite(rightDirection, HIGH);
+  
+        analogWrite(leftSpeed, forwardSpeedLeft);
+        analogWrite(rightSpeed, forwardSpeedRight);
+  
+      delay(1000);
+      while(analogRead(centreIR) < IRThresh)
+      {
+        //rotating 
+      }
+      //Fix to ensure always turns 180 with a timer!
+      Serial.println("Turned Right");
+      stop();
+      break;
+      
     case -1:
       digitalWrite(leftDirection, HIGH);
       digitalWrite(rightDirection, LOW);

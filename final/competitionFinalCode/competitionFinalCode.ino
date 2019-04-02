@@ -36,15 +36,16 @@ void setup(){
 }
 
 void loop(){
-  switch(startingPosition){
-    case 1:
-      completeRoute1();
-      break;
-     default:
-      //
-      break;
-  }
-	
+//  switch(startingPosition){
+//    case 1:
+//      completeRoute1();
+//      break;
+//     default:
+//      //
+//      break;
+//  }
+//	forward(1);
+//  rotate(1);
 	//keep loop empty so that we can test things
     
   
@@ -52,15 +53,15 @@ void loop(){
 //  Serial.print("\t");
 //  Serial.print(analogRead(rightSpeed));
 //  Serial.print("\t");
-//  Serial.print(analogRead(leftIR));
-//  Serial.print("\t");
-//  Serial.print(analogRead(centreIR));
-//  Serial.print("\t");
-//  Serial.print(analogRead(rightIR));
-//  Serial.print("\t");
-//  Serial.print(digitalRead(frontIR));
-//  Serial.print("\n");
-//  delay(100);
-
+  forward(1);
+  Serial.print(analogRead(leftIR));
+  Serial.print("\t");
+  Serial.print(analogRead(centreIR));
+  Serial.print("\t");
+  Serial.print(analogRead(rightIR));
+  Serial.print("\t");
+  Serial.print(digitalRead(frontIR));
+  Serial.print("\n");
+  delay(100);
 
 }
