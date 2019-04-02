@@ -400,3 +400,156 @@ void robotL()
   dropAtHome();
   
 }
+
+  void robotC()
+  {
+    //dice 1
+    nextInt();
+    nextInt();
+    nextInt();
+    nextInt();
+    nextInt();
+    wallStuff();
+    nextInt();
+    nextInt();
+    nextInt();
+    nextInt();
+    nextInt();
+    dropAtHome();
+    
+
+
+   // dice 2
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      nextInt();
+      nextInt();
+      wallStuff();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      dropAtHome();
+
+    //dice 3
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      nextInt();
+      nextInt();
+      wallStuff();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      dropAtHome();
+
+    //dice 4
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      wallStuff();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      nextInt();
+      nextInt();     
+      nextInt();
+      nextInt();
+      nextInt();
+      dropAtHome();
+
+    //dice 5
+    
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      wallStuff();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnRight();
+      stop();
+      nextInt();
+      nextInt();
+      stop();
+      forceForward();
+      stop();
+      turnLeft();
+      stop();
+      nextInt();
+      nextInt();     
+      nextInt();
+      nextInt();
+      nextInt();
+      dropAtHome();
+  }
+  
