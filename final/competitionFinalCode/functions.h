@@ -56,7 +56,7 @@ int L = 0;
 int M = 0;
 int R = 0;
 int IRValues[3] = {0, 0, 0};
-const int IRThresh = 900; //TESTED
+const int IRThresh = 875; //TESTED
 const int intersectionDriftTime = 100;
 //---------------------------------------------
 
@@ -76,8 +76,8 @@ int maxAngle = 150;
 int forwardSpeedLeft = 100; //retune on competition day
 int forwardSpeedRight = 100; //retune on competition day
 
-int rotateSpeedLeft = 105;
-int rotateSpeedRight = 105;
+int rotateSpeedLeft = 120;
+int rotateSpeedRight = 120;
 
 int rotateStartDelay = 600;
 
@@ -216,37 +216,40 @@ int getStartingPosition(){
 
 //Driving Functions
 void forward(){ //function drives from one intersection to the next
-  int lineCounter = 0;
   digitalWrite(leftDirection, HIGH);
   digitalWrite(rightDirection, HIGH);
   bool flag1 = true;
-  bool flag2 = true;
   do {
+
+      Serial.println("Driving...");
       analogWrite(leftSpeed, forwardSpeedLeft);
       analogWrite(rightSpeed, forwardSpeedRight);
       followLine();
 	    flag1 = notAtInt();
 
-//     if(lostLine()){ //someone fix this :) 
-//      Serial.print("Lost line!");
-//      stop();
-//        delay(200);
-//        findLine();
-//     }
-	  if(collisionDetected()){
-        stop();
-        delay(2000);
-      }     
+     if(lostLine()){ //someone fix this :) 
+      Serial.print("Lost line!");
+      stop();
+        delay(200);
+        findLine();
+     }
+
+	      if(collisionDetected()){
+          Serial.println("Collision detected");
+          stop();
+          delay(2000);
+        }     
 	} while(flag1);
 
   int timer = millis();
   while(millis() < (timer + 1000)){
+
+    Serial.println("Forcing forward..");
     analogWrite(leftSpeed, forwardSpeedLeft);
     analogWrite(rightSpeed, forwardSpeedRight); 
   }
   //if collision detected or at intersection
-  analogWrite(leftSpeed, 0);
-  analogWrite(rightSpeed, 0);
+  stop();
   delay(100);
   Serial.print("At Intersection!");
   //some code to check if were at the point we want to be at or if it was just detecting a collision?
@@ -277,8 +280,8 @@ bool collisionDetected(){
   return false;
 }
 
-void followLine(){
-  Serial.println("Following Line");
+void followLine(){ //still needs to debug
+  //Serial.println("1");
   int L = analogRead(leftIR);
   int C = analogRead(centreIR);
   int R = analogRead(rightIR);
@@ -286,33 +289,22 @@ void followLine(){
   if (L > IRThresh)
   {
     Serial.println("left drift");
+   // delay(100);
     int rSpeed = 75;
     int lSpeed = 100;
-    delay(30);
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
-    return;
   }
   else if(R > IRThresh)
   {
     Serial.println("right drift");
     int lSpeed = 75;
     int rSpeed = 100;
-    delay(30);
     analogWrite(leftSpeed, lSpeed);
     analogWrite(rightSpeed, rSpeed);
-    return;
   }
   else 
   {
-	//on line 
-  int lSpeed = 100;
-  int rSpeed = 100;
-  Serial.println("on line");
-  delay(10);
-  analogWrite(leftSpeed, lSpeed);
-  analogWrite(rightSpeed, rSpeed);
-	return;
   }
 }
 
@@ -342,7 +334,7 @@ void rotate(int angle){
         analogWrite(leftSpeed, forwardSpeedLeft);
         analogWrite(rightSpeed, forwardSpeedRight);
   
-      delay(500);
+      delay(1000);
       while(analogRead(centreIR) < IRThresh)
       {
         //rotating 
@@ -479,6 +471,7 @@ void completePath(position path[], int pathLength) {
     moveToCoordinate(path->x[i], path->y_coordinate[i]);
   }
   pickUp();
+  
   for (int i = pathLength - 1; i >= 0; i--) {
     moveToCoordinate(path[i]);
   }
@@ -489,7 +482,8 @@ void completePath(position path[], int pathLength) {
 void moveToCoordinate(position coordinate){
 
   //find the difrence betweencordinateinates
-  position cordinateDifference = {0, 0, 0};
+  position cordinateDifference;
+  
   cordinateDifference.x = cordinate.x - currentPosition.x;
   cordinateDifference.y = cordinate.y - currentPosition.y;
   cordinateDifference.direction = cordinate.direction - currentPosition.direction;

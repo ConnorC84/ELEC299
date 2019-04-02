@@ -30,7 +30,6 @@ void setup(){
     Init();
     //getStartingPosition();
     waitButton();
-     
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
@@ -38,22 +37,20 @@ void loop(){
 	//keep loop empty so that we can test things
   forward();
     rotate(1);
-  delay(500);
   
-  /*
-  Serial.print(analogRead(leftSpeed));
-  Serial.print("\t");
-  Serial.print(analogRead(rightSpeed));
-  Serial.print("\t");
-  Serial.print(analogRead(leftIR));
-  Serial.print("\t");
-  Serial.print(analogRead(centreIR));
-  Serial.print("\t");
-  Serial.print(analogRead(rightIR));
-  Serial.print("\t");
-  Serial.print(digitalRead(frontIR));
-  Serial.print("\n");
-  delay(100);
+//  Serial.print(analogRead(leftSpeed));
+//  Serial.print("\t");
+//  Serial.print(analogRead(rightSpeed));
+//  Serial.print("\t");
+//  Serial.print(analogRead(leftIR));
+//  Serial.print("\t");
+//  Serial.print(analogRead(centreIR));
+//  Serial.print("\t");
+//  Serial.print(analogRead(rightIR));
+//  Serial.print("\t");
+//  Serial.print(digitalRead(frontIR));
+//  Serial.print("\n");
+//  delay(100);
 
-  */
+
 }
