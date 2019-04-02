@@ -75,8 +75,8 @@ int collisionThreshold = 580;
 int gripThres = 700; //Test
 int maxAngle = 150; 
 
-int forwardSpeedLeft = 150; //retune on competition day
-int forwardSpeedRight = 150; //retune on competition day
+int forwardSpeedLeft = 120; //retune on competition day
+int forwardSpeedRight = 120; //retune on competition day
 
 int rotateSpeedLeft = 120;
 int rotateSpeedRight = 120;
@@ -221,15 +221,18 @@ void forward(int num){ //function drives from one intersection to the next
   digitalWrite(leftDirection, HIGH);
   digitalWrite(rightDirection, HIGH);
   for(int i = 0; i < num; i++){
-    
+  int timer = millis();
   bool flag1 = true;
   do {
-
+      
       Serial.println("Driving...");
       analogWrite(leftSpeed, forwardSpeedLeft);
       analogWrite(rightSpeed, forwardSpeedRight);
       followLine();
 	    flag1 = notAtInt();
+//      if(millis() < timer + 1000){
+//        flag1 = true;
+//      }
 
      /*if(lostLine()){ //someone fix this :)
        
@@ -431,7 +434,7 @@ void drive(){
 //SERVO Functions
 void pickUp(){
   servoTilt.write(180);
-	while(analogRead(bumper) < 430){
+	while(analogRead(bumper) != 0){
 		drive();
     followLine();
 	}
@@ -474,7 +477,17 @@ void drop(){
 //-------------------------------------------------
 
 //MATRIX Functions
-void completeRoute1(){
- 
+void path1_ball1(){
+  //straight through
+  forward(5);
+  pickUp();
+  forward(5);
   drop();
+}
+
+void completeRoute1(){
+  path1_ball1();
+//  path1_ball2();
+//  path1_ball3();
+//  path1_ball4();
 }

@@ -31,27 +31,19 @@ void setup(){
     Init();
     startingPosition = 1;
     //startingPosition = getStartingPosition();
-    waitButton();
-	//test path
-  forward(3);
-  rotate(1);
-  forward(1);
-  pickUp();
-  
-   
-    
+    waitButton();  
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
 void loop(){
-//  switch(startingPosition){
-//    case 1:
-//      completeRoute1();
-//      break;
-//     default:
-//      //
-//      break;
-//  }
+  switch(startingPosition){
+    case 1:
+      completeRoute1();
+      break;
+     default:
+      //
+      break;
+  }
 	
 	//keep loop empty so that we can test things
     
