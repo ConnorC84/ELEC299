@@ -324,6 +324,8 @@ void drop()
   servoTilt.write(0);
   delay(100);
   servoGrip.write(0); 
+  delay(100)
+  servoTilt.write(180);
 }
 
 
