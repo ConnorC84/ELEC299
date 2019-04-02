@@ -25,26 +25,33 @@
 #define bumper            A4
 #define frontIR           A5
 
+int startingPosition = -1;
 
 void setup(){
     Init();
-    int startingPosition = getStartingPosition();
+    startingPosition = 1;
+    //startingPosition = getStartingPosition();
     waitButton();
 	//test path
-    forward();
-	rotate(1);
-	forward();
-	pickUp();
- forward();
- forward();
- rotate(-1);
- forward();
- drop();
+  forward(3);
+  rotate(1);
+  forward(1);
+  pickUp();
+  
+   
     
     Serial.begin(9600);  //Serial Monitor will be used throughout testing to see whats happening  
 }
 
 void loop(){
+//  switch(startingPosition){
+//    case 1:
+//      completeRoute1();
+//      break;
+//     default:
+//      //
+//      break;
+//  }
 	
 	//keep loop empty so that we can test things
     

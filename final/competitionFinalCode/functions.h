@@ -75,8 +75,8 @@ int collisionThreshold = 580;
 int gripThres = 700; //Test
 int maxAngle = 150; 
 
-int forwardSpeedLeft = 100; //retune on competition day
-int forwardSpeedRight = 100; //retune on competition day
+int forwardSpeedLeft = 150; //retune on competition day
+int forwardSpeedRight = 150; //retune on competition day
 
 int rotateSpeedLeft = 120;
 int rotateSpeedRight = 120;
@@ -113,7 +113,7 @@ int getStartingPosition();
 
 //Driving
 int intersection(); //I think this works *test it*
-void forward(); // need to update intersection 
+void forward(int number); // need to update intersection 
 bool collisionDetected();
 void backward(); //maybe
 bool lostLine();
@@ -217,9 +217,11 @@ int getStartingPosition(){
 //-------------------------------------------------
 
 //Driving Functions
-void forward(){ //function drives from one intersection to the next
+void forward(int num){ //function drives from one intersection to the next
   digitalWrite(leftDirection, HIGH);
   digitalWrite(rightDirection, HIGH);
+  for(int i = 0; i < num; i++){
+    
   bool flag1 = true;
   do {
 
@@ -261,8 +263,10 @@ void forward(){ //function drives from one intersection to the next
   }
   //if collision detected or at intersection
   stop();
-  delay(100);
+  delay(1000);
   Serial.print("At Intersection!");
+  
+  }
   //some code to check if were at the point we want to be at or if it was just detecting a collision?
 }
 
@@ -427,7 +431,7 @@ void drive(){
 //SERVO Functions
 void pickUp(){
   servoTilt.write(180);
-	while(analogRead(bumper) != 0){
+	while(analogRead(bumper) < 430){
 		drive();
     followLine();
 	}
@@ -450,7 +454,7 @@ void pickUp(){
   servoTilt.write(160);
   delay(5000);
 	rotate(1);
-	forward();
+  rotate(1);
 }
 
 void drop(){
@@ -467,48 +471,10 @@ void drop(){
   servoGrip.write(0);
   rotate(1);	
 }
-
-bool grab(int angleToRotate){
-	angleToRotate = 0;
-//	servoPan.write(angleToRotate); //rotate the arm
-	servoGrip.write(angleToRotate); //open up the grip to start
-	delay(500);
-	servoTilt.write(70); //move arm down into position
-	delay(200);
-	int grip = 0;
-	while(grip < gripThres){
-		grip = analogRead(gripSensor);
-		angleToRotate++; //increase angle for servo grip (make it close)
-		servoGrip.write(angleToRotate);
-		delay(40);
-		if (angleToRotate > maxAngle){ //test case if the object is not picked up
-			servoTilt.write(180); //move back up
-			delay(200);
-			return false;
-		}
-	} // at this point the ball is gripped and the arm is raised
-}
 //-------------------------------------------------
 
 //MATRIX Functions
-/*
-void completePath(int path[][2], int pathLength) {
-  //int pathLenght = (sizeof(path)/sizeof(path[0]));
-  Serial.println(pathLength);
-
-  for (int i = 0; i < pathLength; i++) {
-    moveToCordinate(path[i]);
-  }
-  pickUpDice();
-  for (int i = pathLength - 1; i >= 0; i--) {
-    moveToCordinate(path[i]);
-  }
-  if(botCoords[2]==1){
-    RotateBot(1);
-  }
-  if(botCoords[2]==3){
-    RotateBot(-1);
-  }
-  GoalDrop();
+void completeRoute1(){
+ 
+  drop();
 }
-*/
