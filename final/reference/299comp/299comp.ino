@@ -18,9 +18,9 @@ void setup() {
   Serial.begin(9600);
 
   // PinModes
-
-  pinMode(lbump, INPUT);
-  pinMode(rbump, INPUT);
+  pinMode(bumper, INPUT);
+//  pinMode(lbump, INPUT);
+//  pinMode(rbump, INPUT);
   pinMode(Lwe, INPUT);
   pinMode(Rwe, INPUT);
   pinMode(M1, OUTPUT);
@@ -30,16 +30,31 @@ void setup() {
   Pan.attach(8);
   Tilt.attach(9);
   Grab.attach(10);
-  IRReceiver.attach(11, -1);
+ // IRReceiver.attach(11, -1);
 }
 
 void loop() {
-  start();
-  runPath();
+//  start();
+    runPath();
+    
+}
+
+void waitButton(){ //for testing, remove wrapper for competition
+  while(true){
+    if(analogRead(bumper) < 550){
+    Serial.print("Pushbutton pressed");
+    //blink();
+    delay(200);
+    return;
+        }
+    
+    Serial.println("Waiting for press");  
+    }
 }
 
 void runPath(){
   instruction *path;
+  pathnum = 1;
   int plen;
   if (pathnum == 1){
     path = path1;
@@ -73,7 +88,7 @@ void runPath(){
   drive(-1,0);
   while(1){Serial.println("PATH FINISHED!");}
 }
-
+/*
 void start(){
   Serial.println("Press Bumper to Start");
   while(digitalRead(lbump) == HIGH && digitalRead(rbump) == HIGH){delay(1);}
@@ -95,7 +110,4 @@ void start(){
   
   seekLoc(currLoc.R-1, currLoc.C);
 }
-
-
-
-
+*/

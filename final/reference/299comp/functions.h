@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include <Servo.h>
-#include <QSerial.h>
+//#include <QSerial.h>
 #include <math.h>
 
 //      0
@@ -43,25 +43,26 @@ int E2 = 5;//left motor
 int M2 = 4;
 
 Servo Pan, Tilt, Grab;//G:0(OPEN)-180(CLOSED), T:~100(GRAB)-160(CARRY), P:90
-QSerial IRReceiver;
+//QSerial IRReceiver;
 
-int IRRange = A0;
-int LineL = A1;
-int LineC = A2;
-int LineR = A3;
-int GripFSR = A4;
+int IRRange = A5;
+int LineL = A0;
+int LineC = A1;
+int LineR = A2;
+int GripFSR = A3;
+int bumper = A4;
 int LineThresh = 850;
 
 // Functions
 
-int ReceiveIR(){ ///////////////////////////////////////////
-  int rec = IRReceiver.receive(200);
-  while (rec == 0 || rec == -1 || rec == -2){
-    rec = IRReceiver.receive(200);
-  }
-  Serial.println(rec);
-  return rec;
-}
+//int ReceiveIR(){ ///////////////////////////////////////////
+//  int rec = IRReceiver.receive(200);
+//  while (rec == 0 || rec == -1 || rec == -2){
+//    rec = IRReceiver.receive(200);
+//  }
+//  Serial.println(rec);
+//  return rec;
+//}
 
 void drive(int dir, float speedfactor){ //dir=1 F, dir=0 B, dir=-1 S  ///////////////////////////////////////////
   if (dir == -1){
@@ -282,6 +283,3 @@ void seekLoc(int R, int C){ ////////////////////////////////////////////////////
   drive(-1, 0);
   delay(100);
 }
-
-
-
